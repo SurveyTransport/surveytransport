@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Formulario de visitas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #000;
+      margin: 80px auto 40px; /* espacio para header fijo */
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 600px;
+      color: #000;
+    }
+
+    h2 {
+      text-align: center;
+      color: #000;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    select,
+    input[type="text"],
+    input[type="email"],
+    button {
+      width: 96%;
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      border: 1px solid #000;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #000;
+      background-color: #fff;
+      transition: border-color 0.2s;
+    }
+
+    select:focus,
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    button:focus {
+      border-color: #000;
+      outline: none;
+    }
+
+    select,
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      border: 1px solid #000;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #000;
+      background-color: #fff;
+      transition: border-color 0.2s;
+    }
+
+    select:focus,
+    button:focus {
+      border-color: #000;
+      outline: none;
+    }
+
+    button {
+      background-color: #0068B5;
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0068B5;
+    }
+
+    #mensaje {
+      text-align: center;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .toast {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      background-color: #28a745;
+      /* verde éxito */
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast.hidden {
+      display: none;
+    }
+
+    .required::after {
+      content: " *";
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/64/Intel-logo-2022.png" alt="Intel Logo"
+    style="width: 150px; position: fixed; top: 10px; left: 10px; z-index: 1000;" />
+
+  <h3 id="title-language-select"
+    style="width: 400px; position: absolute; top: 10px;  z-index: 1000; font-size: 16px; margin: 0 0 8px 0;">
+    In which language do you want to fill the form? / ¿En qué idioma quiere completar el formulario?
+  </h3>
+
+  <select id="langSwitch" onchange="switchLanguage(this.value)"
+    style="width: 250px; position: absolute; top: 65px; z-index: 1000; font-size: 16px;">
+    <option value="en">English</option>
+    <option value="es">Español</option>
+  </select>
+
+
+  <div id="successToast" class="toast hidden">✅ Data submitted successfully!</div>
+
+  <form id="miFormulario" style="margin-top: 50px;">
+    <div class="container">
+      <div id="survey-header" style="font-size: 16px; color: #0068B5; margin-bottom: 20px;">
+        🚍 <strong style="font-size: 18px;" id="survey-title">Survey to Understand Site Population Transportation
+          Needs</strong> 🚍
+      </div>
+
+      <p id="survey-intro" style="font-size: 16px; color: #000; line-height: 1.5;">
+        Please complete this survey only if you have a transportation need and would use the service if it were
+        implemented.
+        This survey will be available from <strong>WW32.1</strong> to <strong>WW33.5</strong> to gather information
+        that will be used to assess additional routes. REWS will analyze the data, and action plans will be
+        communicated based on the results.
+      </p>
+
+      <p id="survey-disclaimer" style="font-size: 15px; color: #000; line-height: 1.5;">
+        <strong>Disclaimer:</strong> This survey is voluntary and any Personal Data you provide will be treated as
+        private and kept confidential.
+        To learn more about Intel’s Privacy practices, please visit
+        <a href="https://www.intel.com/privacy" target="_blank" style="color: #0068B5;" id="privacy-link">Intel's Global
+          Employee and Contingent Worker Privacy Notices</a>.
+        By submitting this survey, you acknowledge and consent to the collection, use, and retention of your information
+        as described herein.
+        Participation in this survey does not guarantee implementation of new transportation routes and is for
+        assessment purposes only.
+      </p>
+
+      <label for="name" id="label-name">1. Please enter your first and last name <span
+          style="color: red">*</span></label>
+      <input type="text" id="name" name="name" required />
+
+      <!-- Pregunta 2 -->
+      <label for="email" id="label-email">2. Please provide your email address <span style="color: red">*</span></label>
+      <p id="desc-email" style="margin-top: 2px; margin-bottom: 8px;">
+        We only ask to ensure that it's an Intel employee providing the feedback
+      </p>
+      <input type="email" id="email" name="email" value="@intel.com" required />
+      <input id="testid" type="hidden" name="testid" value="" />
+
+      <!-- Pregunta 3 -->
+      <label for="mainShift" id="label-mainShift">3. What shift are you in? <span style="color: red">*</span></label>
+      <select id="mainShift" name="mainShift" required>
+        <option value="" id="opt-shift-default">Select an option</option>
+        <option value="Shift 1 Office" id="opt-shift-1">Shift 1 Office</option>
+        <option value="Compressed Shift" id="opt-shift-compressed">Compressed Shift</option>
+      </select>
+
+
+      <!-- Sección condicional de turnos comprimidos -->
+      <div id="compressedShiftSection" style="display: none;">
+        <p id="desc-compressed-link">
+          Select the officially assigned shift from Q1 2025. If you're unsure which shift you belong to, you can access
+          the following link:
+          <a href="https://intel.sharepoint.com/sites/atmcratcommunications/CRAT%20Compressed%20Work%20Week%20Shifts%20Information/Forms/AllItems.aspx?id=%2Fsites%2Fatmcratcommunications%2FCRAT%20Compressed%20Work%20Week%20Shifts%20Information"
+            target="_blank">
+            Compressed Work Week Shifts Information
+          </a>
+        </p>
+
+        <label for="compressedShift" id="label-compressedShift">Select your Compressed Shift:</label>
+        <select id="compressedShift" name="compressedShift">
+          <option value="" id="opt-compressed-default">Select a shift</option>
+          <option>A1</option>
+          <option>A2</option>
+          <option>A3</option>
+          <option>AA</option>
+          <option>AC4</option>
+          <option>B1</option>
+          <option>B2</option>
+          <option>B3</option>
+          <option>BB</option>
+          <option>BD4</option>
+          <option>C1</option>
+          <option>C2</option>
+          <option>C3</option>
+          <option>CC</option>
+          <option>D1</option>
+          <option>D2</option>
+          <option>D3</option>
+          <option>DD</option>
+        </select>
+      </div>
+
+      <script>
+        const shiftSelect = document.getElementById("mainShift");
+        const compressedSection = document.getElementById("compressedShiftSection");
+        shiftSelect.addEventListener("change", function () {
+          if (this.value === "Compressed Shift") {
+            compressedSection.style.display = "block";
+          } else {
+            compressedSection.style.display = "none";
+          }
+        });
+      </script>
+
+      <!-- Pregunta 4 -->
+      <label for="frequency" id="label-frequency">4. How many times a week do you visit the site? <span
+          style="color: red">*</span></label>
+      <select id="frequency" name="frequency" onchange="mostrarOtroFrecuencia()" required>
+        <option value="" id="option4">Select an option</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option value="Other" id="option-other-frequency">Other (Once a month, once every 2 weeks, once every 3 weeks)
+        </option>
+      </select>
+
+      <!-- Subpregunta visible si se escoge "Other" -->
+      <div id="otroFrecuenciaContainer" style="display:none; margin-top: 10px;">
+        <label for="otroFrecuencia" id="label-otro-frecuencia">Select an option:</label>
+        <select id="otroFrecuencia" name="otroFrecuencia">
+          <option value="" id="option-sub-select">Select an option</option>
+          <option id="option-once-month">Once a month</option>
+          <option id="option-every-2-weeks">Once every 2 weeks</option>
+          <option id="option-every-3-weeks">Once every 3 weeks</option>
+        </select>
+      </div>
+
+      <label id="label-days">
+        5. Which days do you frequent the site? <span style="color: red">*</span>
+      </label>
+      <div>
+        <label><input type="checkbox" name="days[]" value="Monday" /><span id="day-mon">Monday</span></label><br />
+        <label><input type="checkbox" name="days[]" value="Tuesday" /><span id="day-tue">Tuesday</span></label><br />
+        <label><input type="checkbox" name="days[]" value="Wednesday" /><span
+            id="day-wed">Wednesday</span></label><br />
+        <label><input type="checkbox" name="days[]" value="Thursday" /><span id="day-thu">Thursday</span></label><br />
+        <label><input type="checkbox" name="days[]" value="Friday" /><span id="day-fri">Friday</span></label><br />
+        <label><input type="checkbox" name="days[]" value="Saturday" /><span id="day-sat">Saturday</span></label><br />
+        <label><input type="checkbox" name="days[]" value="Sunday" /><span id="day-sun">Sunday</span></label><br />
+      </div>
+
+      <label for="provincia" id="label-provincia">
+        6. In which province do you live? <span style="color: red">*</span>
+      </label>
+      <select id="provincia" name="provincia" onchange="cargarCantones()" required>
+        <option value="" id="option-provincia-placeholder">Select a province</option>
+      </select>
+
+      <label for="canton" id="label-canton">
+        7. In which canton do you live? <span style="color: red">*</span>
+      </label>
+      <select id="canton" name="canton" onchange="cargarDistritos()" required>
+        <option value="" id="option-canton-placeholder">Select a canton</option>
+      </select>
+
+      <!-- PREGUNTA 8 -->
+      <label for="distrito" id="label-distrito">
+        8. In which district do you live? <span style="color: red">*</span>
+      </label>
+      <select id="distrito" name="distrito" required>
+        <option value="" id="option-distrito-placeholder">Select a district</option>
+      </select>
+
+      <!-- CARPOOL INTERÉS -->
+      <label class="carpool-label">
+        <input type="checkbox" id="carpoolInterest" name="carpoolInterest" />
+        <span class="custom-check"></span>
+        <span id="label-carpool-interest">I am interested in participating in a potential carpooling project</span>
+      </label>
+
+      <!-- PREGUNTA 9 -->
+      <div id="preguntaVehiculo" style="display: none; margin-top: 1rem;">
+        <label for="vehiculoPropio" id="label-vehiculo">
+          9. Do you have your own vehicle that you use as a regular means of transportation?
+          <span style="color: red">*</span>
+        </label>
+        <select id="vehiculoPropio" name="vehiculoPropio" onchange="toggleCarpoolOptions()">
+          <option value="" id="vehiculo-option-placeholder">Select an option</option>
+          <option value="Yes" id="vehiculo-option-yes">Yes</option>
+          <option value="No" id="vehiculo-option-no">No</option>
+        </select>
+
+        <!-- OPCIONES DE CARPOOL -->
+        <div id="opcionesCarpool" style="display: none; margin-top: 10px;">
+          <label for="preferenciaCarpool" id="label-preferencia">
+            If you answered "Yes", please indicate your interest in participating in a carpooling scheme:
+          </label>
+          <select id="preferenciaCarpool" name="preferenciaCarpool">
+            <option value="" id="carpool-option-placeholder">Select an option</option>
+            <option value="I would like to offer my vehicle to share rides with other colleagues."
+              id="carpool-option-offer">
+              I would like to offer my vehicle to share rides with other colleagues.
+            </option>
+            <option value="I wish to travel as a passenger in another person's vehicle." id="carpool-option-passenger">
+              I wish to travel as a passenger in another person's vehicle.
+            </option>
+            <option value="I am interested in both options (offering and traveling)." id="carpool-option-both">
+              I am interested in both options (offering and traveling).
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SECCIÓN HORARIOS -->
+      <div id="carpoolTimesSection" style="display: none; margin-left: 1rem; margin-top: 1rem;">
+        <p id="label-horario-info">🕒 Please indicate your usual arrival and departure times at the site:</p>
+
+        <p style="margin-top: 0.5rem;"><strong id="label-horario-llegada">Arrival Times:</strong></p>
+        <label><input type="checkbox" name="arrivalTimes[]" value="5-6"> <span id="arrival-5-6">Between 5:00 AM and 6:00
+            AM</span></label><br />
+        <label><input type="checkbox" name="arrivalTimes[]" value="7-8"> <span id="arrival-7-8">Between 7:00 AM and 8:00
+            AM</span></label><br />
+        <label><input type="checkbox" name="arrivalTimes[]" value="8-9"> <span id="arrival-8-9">Between 8:00 AM and 9:00
+            AM</span></label><br />
+
+        <p style="margin-top: 1rem;"><strong id="label-horario-salida">Departure Times:</strong></p>
+        <label><input type="checkbox" name="departureTimes[]" value="4-5"> <span id="departure-4-5">Between 4:00 PM and
+            5:00 PM</span></label><br />
+        <label><input type="checkbox" name="departureTimes[]" value="5-6"> <span id="departure-5-6">Between 5:00 PM and
+            6:00 PM</span></label><br />
+        <label><input type="checkbox" name="departureTimes[]" value="6-7"> <span id="departure-6-7">Between 6:00 PM and
+            7:00 PM</span></label><br />
+      </div>
+
+      <script>
+        const carpoolCheckbox = document.getElementById("carpoolInterest");
+        const carpoolSection = document.getElementById("carpoolTimesSection");
+        const preguntaVehiculo = document.getElementById("preguntaVehiculo");
+        const opcionesCarpool = document.getElementById("opcionesCarpool");
+        const vehiculoSelect = document.getElementById("vehiculoPropio");
+
+        carpoolCheckbox.addEventListener("change", function () {
+          const visible = this.checked;
+          preguntaVehiculo.style.display = visible ? "block" : "none";
+          carpoolSection.style.display = visible ? "block" : "none";
+
+          if (!visible) {
+            vehiculoSelect.value = "";
+            opcionesCarpool.style.display = "none";
+          }
+        });
+
+        function toggleCarpoolOptions() {
+          opcionesCarpool.style.display = vehiculoSelect.value === "Yes" ? "block" : "none";
+        }
+      </script>
+
+      <button type="submit">Enviar</button>
+    </div>
+  </form>
+  <p id="mensaje"></p>
+  </div>
+
+  <script>
+    function mostrarOtroFrecuencia() {
+      const frecuencia = document.getElementById("frequency").value;
+      const contenedor = document.getElementById("otroFrecuenciaContainer");
+      if (frecuencia === "Other") {
+        contenedor.style.display = "block";
+      } else {
+        contenedor.style.display = "none";
+        document.getElementById("otroFrecuencia").value = "";
+      }
+    }
+
+    const datos = {
+      "San José": {
+        "San José": [
+          "Carmen", "Merced", "Hospital", "Catedral", "Zapote", "San Francisco de Dos Ríos", "Uruca",
+          "Mata Redonda", "Pavas", "Hatillo", "San Sebastián"
+        ],
+        "Escazú": ["Escazú", "San Antonio", "San Rafael"],
+        "Desamparados": [
+          "Desamparados", "San Miguel", "San Juan de Dios", "San Rafael Arriba", "San Antonio",
+          "Frailes", "Patarra", "San Cristobal", "Rosario", "Damas", "San Rafael Abajo", "Gravilias", "Los Guido"
+        ],
+        "Puriscal": [
+          "Santiago", "Mercedes Sur", "Barbacoas", "Grifo Alto", "San Rafael", "Candelarita",
+          "Desamparaditos", "San Antonio", "Chires"
+        ],
+        "Tarrazú": ["San Marcos", "San Lorenzo", "San Carlos"],
+        "Aserrí": ["Aserrí", "Tarbaca", "Vuelta de Jorco", "San Gabriel", "Legua", "Monterrey", "Salitrillos"],
+        "Mora": ["Colón", "Guayabo", "Tabarcia", "Piedras Negras", "Picagres", "Jaris", "Quitirrisí"],
+        "Goicoechea": [
+          "Guadalupe", "San Francisco", "Calle Blancos", "Mata de Plátano",
+          "Ipis", "Rancho Redondo", "Purral"
+        ],
+        "Santa Ana": ["Santa Ana", "Salitral", "Pozos", "Uruca", "Piedades", "Brasil"],
+        "Alajuelita": ["Alajuelita", "San Josecito", "San Antonio", "Concepción", "San Felipe"],
+        "Vázquez de Coronado": [
+          "San Isidro", "San Rafael", "Dulce Nombre de Jesús", "Patalillo", "Cascajal"
+        ],
+        "Acosta": ["San Ignacio", "Guaitil", "Palmichal", "Cangrejal", "Sabanillas"],
+        "Tibás": ["San Juan", "Cinco Esquinas", "Anselmo Llorente", "León XIII", "Colima"],
+        "Moravia": ["San Vicente", "San Jerónimo", "La Trinidad"],
+        "Montes de Oca": ["San Pedro", "Sabanilla", "Mercedes", "San Rafael"],
+        "Turrubares": ["San Pablo", "San Pedro", "San Juan de Mata", "San Luis", "Carara"],
+        "Dota": ["Santa María", "Jardín", "Copey"],
+        "Curridabat": ["Curridabat", "Granadilla", "Sánchez", "Tirrases"],
+        "Pérez Zeledón": [
+          "San Isidro de El General", "El General", "Daniel Flores", "Rivas", "San Pedro",
+          "Platanares", "Pejibaye", "Cajón", "Barú", "Río Nuevo", "Paramo", "La Amistad"
+        ],
+        "León Cortés Castro": [
+          "San Pablo", "San Andrés", "Llano Bonito", "San Isidro", "Santa Cruz", "San Antonio"
+        ]
+      },
+      "Alajuela": {
+        "Alajuela": [
+          "Alajuela", "San José", "Carrizal", "San Antonio", "Guácima", "San Isidro", "Sabanilla",
+          "San Rafael", "Río Segundo", "Desamparados", "Turrucares", "Tambor", "Garita", "Sarapiquí"
+        ],
+        "San Ramón": [
+          "San Ramón", "Santiago", "San Juan", "Piedades Norte", "Piedades Sur", "San Rafael", "San Isidro",
+          "Ángeles", "Alfaro", "Volio", "Concepción", "Zapotal", "Peñas Blancas", "San Lorenzo"
+        ],
+        "Grecia": [
+          "Grecia", "San Isidro", "Santa Gertrudis", "San Roque", "Tacares", "Puente de Piedra", "Bolívar"
+        ],
+        "San Mateo": [
+          "San Mateo", "Desmonte", "Jesús María", "Labrador"
+        ],
+        "Atenas": [
+          "Atenas", "Jesús", "Mercedes", "San Isidro", "Concepción", "San José", "Santa Eulalia", "Escobal"
+        ],
+        "Naranjo": [
+          "Naranjo", "San Miguel", "San José", "Cirrí Sur", "San Jerónimo", "San Juan", "El Rosario", "Palmitos"
+        ],
+        "Palmares": [
+          "Palmares", "Zaragoza", "Buenos Aires", "Santiago", "Candelaria", "Esquipulas", "La Granja"
+        ],
+        "Poás": [
+          "San Pedro", "San Juan", "San Rafael", "Carrillos", "Sabana Redonda"
+        ],
+        "Orotina": [
+          "Orotina", "El Mastate", "Hacienda Vieja", "Coyolar", "La Ceiba"
+        ],
+        "San Carlos": [
+          "Quesada", "Florencia", "Buenavista", "Aguas Zarcas", "Venecia", "Pital", "La Fortuna", "La Tigra",
+          "La Palmera", "Venado", "Cutris", "Monterrey", "Pocosol"
+        ],
+        "Zarcero": [
+          "Zarcero", "Laguna", "Tapesco", "Guadalupe", "Palmira", "Zapote", "Brisas"
+        ],
+        "Sarchí": [
+          "Sarchí Norte", "Sarchí Sur", "Toro Amarillo", "San Pedro", "Rodríguez"
+        ],
+        "Upala": [
+          "Upala", "Aguas Claras", "San José O Pizote", "Bijagua", "Delicias", "Dos Ríos", "Yolillal", "Canalete"
+        ],
+        "Los Chiles": [
+          "Los Chiles", "Caño Negro", "El Amparo", "San Jorge"
+        ],
+        "Guatuso": [
+          "San Rafael", "Buenavista", "Cote", "Katira"
+        ],
+        "Río Cuarto": [
+          "Río Cuarto", "Santa Rita", "Santa Isabel"
+        ]
+      },
+      "Cartago": {
+        "Cartago": [
+          "Oriental", "Occidental", "Carmen", "San Nicolás", "Aguacaliente o San Francisco",
+          "Guadalupe o Arenilla", "Corralillo", "Tierra Blanca", "Dulce Nombre",
+          "Llano Grande", "Quebradilla"
+        ],
+        "Paraíso": [
+          "Paraíso", "Santiago", "Orosi", "Cachí", "Llanos de Santa Lucía", "Birrisito"
+        ],
+        "La Unión": [
+          "Tres Ríos", "San Diego", "San Juan", "San Rafael", "Concepción",
+          "Dulce Nombre", "San Ramón", "Río Azul"
+        ],
+        "Jiménez": [
+          "Juan Viñas", "Tucurrique", "Pejibaye"
+        ],
+        "Turrialba": [
+          "Turrialba", "La Suiza", "Peralta", "Santa Cruz", "Santa Teresita",
+          "Pavones", "Tuis", "Tayutic", "Santa Rosa", "Tres Equis",
+          "La Isabel", "Chirripó"
+        ],
+        "Alvarado": [
+          "Pacayas", "Cervantes", "Capellades"
+        ],
+        "Oreamuno": [
+          "San Rafael", "Cot", "Potrero Cerrado", "Cipreses", "Santa Rosa"
+        ],
+        "El Guarco": [
+          "El Tejar", "San Isidro", "Tobosi", "Patio de Agua"
+        ]
+      },
+      "Heredia": {
+        "Heredia": ["Heredia", "Mercedes", "San Francisco", "Ulloa", "Varablanca"],
+        "Barva": ["Barva", "San Pedro", "San Pablo", "San Roque", "Santa Lucía", "San José de la Montaña"],
+        "Santo Domingo": [
+          "Santo Domingo", "San Vicente", "San Miguel", "Paracito", "Santo Tomás",
+          "Santa Rosa", "Tures", "Pará"
+        ],
+        "Santa Bárbara": [
+          "Santa Bárbara", "San Pedro", "San Juan", "Jesús", "Santo Domingo", "Purabá"
+        ],
+        "San Rafael": ["San Rafael", "San Josecito", "Santiago", "Ángeles", "Concepción"],
+        "San Isidro": ["San Isidro", "San José", "Concepción", "San Francisco"],
+        "Belén": ["San Antonio", "La Ribera", "La Asunción"],
+        "Flores": ["San Joaquín", "Barrantes", "Llorente"],
+        "San Pablo": ["San Pablo", "Rincón de Sabanilla"],
+        "Sarapiquí": [
+          "Puerto Viejo", "La Virgen", "Las Horquetas", "Llanuras del Gaspar", "Cureña"
+        ]
+      },
+      "Guanacaste": {
+        "Liberia": ["Liberia", "Cañas Dulces", "Mayorga", "Nacascolo", "Curubandé"],
+        "Nicoya": ["Nicoya", "Mansión", "San Antonio", "Quebrada Honda", "Sámara", "Nosara", "Belén de Nosarita"],
+        "Santa Cruz": ["Santa Cruz", "Bolsón", "Veintisiete de Abril", "Tempate", "Cartagena", "Cuajiniquil", "Diriá", "Cabo Velas", "Tamarindo"],
+        "Bagaces": ["Bagaces", "La Fortuna", "Mogote", "Río Naranjo"],
+        "Carrillo": ["Filadelfia", "Palmira", "Sardinal", "Belén"],
+        "Cañas": ["Cañas", "Palmira", "San Miguel", "Bebedero", "Porozal"],
+        "Abangares": ["Las Juntas", "Sierra", "San Juan", "Colorado"],
+        "Tilarán": ["Tilarán", "Quebrada Grande", "Tronadora", "Santa Rosa", "Líbano", "Tierras Morenas", "Arenal", "Cabeceras"],
+        "Nandayure": ["Carmona", "Santa Rita", "Zapotal", "San Pablo", "Porvenir", "Bejuco"],
+        "La Cruz": ["La Cruz", "Santa Cecilia", "La Garita", "Santa Elena"],
+        "Hojancha": ["Hojancha", "Monte Romo", "Puerto Carrillo", "Huacas", "Matambú"]
+      },
+      "Puntarenas": {
+        "Puntarenas": ["Puntarenas", "Pitahaya", "Chomes", "Lepanto", "Paquera", "Manzanillo", "Guacimal", "Barranca", "Isla del Coco", "Cóbano", "Chacarita", "Chira", "Acapulco", "El Roble", "Arancibia"],
+        "Esparza": ["Espíritu Santo", "San Juan Grande", "Macacona", "San Rafael", "San Jerónimo", "Caldera"],
+        "Buenos Aires": ["Buenos Aires", "Volcán", "Potrero Grande", "Boruca", "Pilas", "Colinas", "Chánguena", "Biolley", "Brunka"],
+        "Montes de Oro": ["Miramar", "La Unión", "San Isidro"],
+        "Osa": ["Puerto Cortés", "Palmar", "Sierpe", "Bahía Ballena", "Piedras Blancas", "Bahía Drake"],
+        "Quepos": ["Quepos", "Savegre", "Naranjito"],
+        "Golfito": ["Golfito", "Puerto Jiménez", "Guaycará", "Pavón"],
+        "Coto Brus": ["San Vito", "Sabalito", "Aguabuena", "Limoncito", "Pittier", "Gutiérrez Braun"],
+        "Parrita": ["Parrita"],
+        "Corredores": ["Corredor", "La Cuesta", "Canoas", "Laurel"],
+        "Garabito": ["Jacó", "Tárcoles", "Lagunillas"],
+        "Monteverde": ["Monteverde"]
+      },
+      "Limón": {
+        "Limón": ["Limón", "Valle La Estrella", "Río Blanco", "Matama"],
+        "Pococí": ["Guápiles", "Jiménez", "Rita", "Roxana", "Cariari", "Colorado", "La Colonia"],
+        "Siquirres": ["Siquirres", "Pacuarito", "Florida", "Germania", "El Cairo", "Alegría", "Reventazón"],
+        "Talamanca": ["Bratsi", "Sixaola", "Cahuita", "Telire"],
+        "Matina": ["Matina", "Batán", "Carrandí"],
+        "Guácimo": ["Guácimo", "Mercedes", "Pocora", "Río Jiménez", "Duacarí"]
+      }
+    };
+
+    function showToast(message) {
+      const toast = document.getElementById("successToast");
+      toast.textContent = message;
+      toast.classList.remove("hidden");
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+        toast.classList.add("hidden");
+      }, 3000); // desaparece después de 3 segundos
+    }
+
+    function cargarProvincias() {
+      const select = document.getElementById("provincia");
+      select.innerHTML = '<option value="">Select a province</option>'; // Reiniciar
+      for (const provincia in datos) {
+        const option = document.createElement("option");
+        option.value = provincia;
+        option.textContent = provincia;
+        select.appendChild(option);
+      }
+    }
+
+    function cargarCantones() {
+      const provincia = document.getElementById("provincia").value;
+      const cantones = datos[provincia] || {};
+      const selectCanton = document.getElementById("canton");
+      selectCanton.innerHTML = '<option value="">Select a canton</option>';
+      document.getElementById("distrito").innerHTML = '<option value="">Select a district</option>';
+      for (const canton in cantones) {
+        const option = document.createElement("option");
+        option.value = canton;
+        option.textContent = canton;
+        selectCanton.appendChild(option);
+      }
+    }
+
+    function cargarDistritos() {
+      const provincia = document.getElementById("provincia").value;
+      const canton = document.getElementById("canton").value;
+      const distritos = (datos[provincia] && datos[provincia][canton]) || [];
+      const selectDistrito = document.getElementById("distrito");
+      selectDistrito.innerHTML = '<option value="">Select a district</option>';
+      distritos.forEach(distrito => {
+        const option = document.createElement("option");
+        option.value = distrito;
+        option.textContent = distrito;
+        selectDistrito.appendChild(option);
+      });
+    }
+
+    const url = "https://prod-00.westus.logic.azure.com:443/workflows/f2ca6e94799a4f6097c8e9034a063d3f/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=pW7MNfFeUjDAR8zPoVz31Ah2Lnzoz5Tt6HJ8Hbu0pXE";
+
+    document.getElementById("miFormulario").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const form = this;
+
+      const name = form.elements["name"].value;
+      const email = form.elements["email"].value;
+      const mainShift = form.elements["mainShift"].value;
+      const compressedShift = form.elements["compressedShift"].value || "";
+      const carpoolInterest = form.elements["carpoolInterest"].checked;
+
+      let arrivalTimes = [];
+      let departureTimes = [];
+
+      if (carpoolInterest) {
+        document.querySelectorAll('input[name="arrivalTimes[]"]:checked').forEach(cb => {
+          const label = cb.parentNode;
+          arrivalTimes.push(label.innerText.trim());
+        });
+        document.querySelectorAll('input[name="departureTimes[]"]:checked').forEach(cb => {
+          const label = cb.parentNode;
+          departureTimes.push(label.innerText.trim());
+        });
+      }
+
+      const frequency = form.elements["frequency"].value;
+      const otroFrecuencia = form.elements["otroFrecuencia"]?.value || "";
+
+      const days = Array.from(document.querySelectorAll('input[name="days[]"]:checked'))
+        .map(cb => cb.value)
+        .join(";");
+
+      const provincia = form.elements["provincia"].value;
+      const canton = form.elements["canton"].value;
+      const distrito = form.elements["distrito"].value;
+
+      // 🚘 NUEVO: capturar valores de pregunta 10
+      const vehiculoPropio = form.elements["vehiculoPropio"].value;
+      const preferenciaCarpool = vehiculoPropio === "Yes" ? form.elements["preferenciaCarpool"].value : "";
+
+      const data = {
+        name: name,
+        email: email,
+        mainShift: mainShift,
+        compressedShift: compressedShift,
+        carpoolInterest: carpoolInterest,
+        arrivalTimes: arrivalTimes.join(";"),
+        departureTimes: departureTimes.join(";"),
+        frequency: frequency,
+        otroFrecuencia: otroFrecuencia,
+        days: days,
+        provincia: provincia,
+        canton: canton,
+        distrito: distrito,
+
+        // 🚀 NUEVOS DATOS ENVIADOS
+        vehiculoPropio: vehiculoPropio,
+        preferenciaCarpool: preferenciaCarpool
+      };
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          if (response.ok) {
+            showToast("✅ Data submitted successfully!");
+            form.reset();
+            document.getElementById("compressedShiftSection").style.display = "none";
+            document.getElementById("carpoolTimesSection").style.display = "none";
+            document.getElementById("otroFrecuenciaContainer").style.display = "none";
+            document.getElementById("preguntaVehiculo").style.display = "none";
+            document.getElementById("opcionesCarpool").style.display = "none";
+          } else {
+            alert("Error al enviar datos");
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("Error en la conexión");
+        });
+    });
+
+    window.onload = cargarProvincias;
+
+    const translations = {
+      en: {
+        "survey-title": "Survey to Understand CR Site Population Transportation Needs",
+        "survey-intro": `Please complete this survey only if you have a transportation need and would use the service if it were implemented.
+    This survey will be available from <strong>WW32.1</strong> to <strong>WW33.5</strong> to gather information
+    that will be used to assess additional routes. REWS will analyze the data, and action plans will be
+    communicated based on the results.`,
+        "disclaimer-title": "Disclaimer:",
+        "disclaimer-text": "This survey is voluntary and any Personal Data you provide will be treated as private and kept confidential. To learn more about Intel’s Privacy practices, please visit",
+        "privacy-link": "Intel's Global Employee and Contingent Worker Privacy Notices",
+        "disclaimer-additional": "By submitting this survey, you acknowledge and consent to the collection, use, and retention of your information as described herein. Participation in this survey does not guarantee implementation of new transportation routes and is for assessment purposes only.",
+        "label-name": "1. Please enter your first and last name *",
+        "label-email": "2. Please provide your email address *",
+        "desc-email": "We only ask to ensure that it's an Intel employee providing the feedback",
+        "label-mainShift": "3. What shift are you in? *",
+        "opt-shift-default": "Select an option",
+        "opt-shift-1": "Shift 1 Office",
+        "desc-compressed-link": `Select the officially assigned shift from Q1 2025. If you're unsure which shift you belong to, you can access
+    the following link:
+    <a href="https://intel.sharepoint.com/sites/atmcratcommunications/CRAT%20Compressed%20Work%20Week%20Shifts%20Information/Forms/AllItems.aspx?id=%2Fsites%2Fatmcratcommunications%2FCRAT%20Compressed%20Work%20Week%20Shifts%20Information"
+    target="_blank">
+      Compressed Work Week Shifts Information
+    </a>`,
+        "label-compressedShift": "Select your Compressed Shift:",
+        "opt-compressed-default": "Select a shift",
+        "label-frequency": "4. How many times a week do you visit the site? *",
+        "option-other-frequency": "Other (Once a month, once every 2 weeks, once every 3 weeks)",
+        "label-otro-frecuencia": "Select an option:",
+        "option4": "Select an option",
+        "option-sub-select": "Select an option",
+        "option-once-month": "Once a month",
+        "option-every-2-weeks": "Once every 2 weeks",
+        "option-every-3-weeks": "Once every 3 weeks",
+        "option-select": "Select an option",
+        "label-days": "5. Which days do you frequent the site? *",
+        "day-mon": "Monday",
+        "day-tue": "Tuesday",
+        "day-wed": "Wednesday",
+        "day-thu": "Thursday",
+        "day-fri": "Friday",
+        "day-sat": "Saturday",
+        "day-sun": "Sunday",
+        "label-provincia": "6. In which province do you live? *",
+        "option-provincia-placeholder": "Select a province",
+        "label-canton": "7. In which canton do you live? *",
+        "option-canton-placeholder": "Select a canton",
+        "label-distrito": "8. In which district do you live? *",
+        "option-distrito-placeholder": "Select a district",
+        "label-carpool-interest": "I am interested in participating in a potential carpooling project",
+        "label-vehiculo": "9. Do you have your own vehicle that you use as a regular means of transportation? *",
+        "vehiculo-option-placeholder": "Select an option",
+        "vehiculo-option-yes": "Yes",
+        "vehiculo-option-no": "No",
+        "label-preferencia": 'If you answered "Yes", please indicate your interest in participating in a carpooling scheme:',
+        "carpool-option-placeholder": "Select an option",
+        "carpool-option-offer": "I would like to offer my vehicle to share rides with other colleagues.",
+        "carpool-option-passenger": "I wish to travel as a passenger in another person's vehicle.",
+        "carpool-option-both": "I am interested in both options (offering and traveling).",
+        "label-horario-info": "🕒 Please indicate your usual arrival and departure times at the site:",
+        "label-horario-llegada": "Arrival Times:",
+        "arrival-5-6": "Between 5:00 AM and 6:00 AM",
+        "arrival-7-8": "Between 7:00 AM and 8:00 AM",
+        "arrival-8-9": "Between 8:00 AM and 9:00 AM",
+        "label-horario-salida": "Departure Times:",
+        "departure-4-5": "Between 4:00 PM and 5:00 PM",
+        "departure-5-6": "Between 5:00 PM and 6:00 PM",
+        "departure-6-7": "Between 6:00 PM and 7:00 PM",
+        "survey-disclaimer": `<strong>Disclaimer:</strong> This survey is voluntary and any Personal Data you provide will be treated as private and kept confidential.
+    To learn more about Intel’s Privacy practices, please visit
+    <a href="https://www.intel.com/privacy" target="_blank" style="color: #0068B5;" id="privacy-link">Intel's Global Employee and Contingent Worker Privacy Notices</a>.
+    By submitting this survey, you acknowledge and consent to the collection, use, and retention of your information as described herein.
+    Participation in this survey does not guarantee implementation of new transportation routes and is for assessment purposes only.`
+      },
+      es: {
+        "survey-title": "Encuesta para Entender las Necesidades de Transporte de la Población del Site de Costa Rica",
+        "survey-intro": `Complete esta encuesta solo si tiene una necesidad de transporte y usaría el servicio si se implementara.
+        Esta encuesta estará disponible desde <strong>WW32.1</strong> hasta <strong>WW33.5</strong> para recopilar información
+        que se utilizará para evaluar rutas adicionales. REWS analizará los datos y se comunicarán planes de acción
+        según los resultados.`,
+        "disclaimer-title": "Aviso Legal:",
+        "disclaimer-text": "Esta encuesta es voluntaria y cualquier dato personal que proporcione será tratado como privado y confidencial. Para conocer más sobre las prácticas de privacidad de Intel, visite",
+        "privacy-link": "Avisos de Privacidad Global para Empleados y Trabajadores Contingentes de Intel",
+        "disclaimer-additional": "Al enviar esta encuesta, usted reconoce y da su consentimiento para la recopilación, uso y retención de su información según lo descrito aquí. La participación en esta encuesta no garantiza la implementación de nuevas rutas de transporte y es solo para fines de evaluación.",
+        "label-language-select": "Seleccione idioma:",
+        "form-title": "Encuesta de Transporte Intel",
+        "label-name": "1. Por favor ingrese su nombre y apellido *",
+        "label-email": "2. Por favor ingrese su correo electrónico *",
+        "desc-email": "Solicitamos el correo para asegurarnos de que sea un empleado de Intel quien brinde la retroalimentación",
+        "label-mainShift": "3. ¿En qué turno trabaja? *",
+        "opt-shift-default": "Seleccione una opción",
+        "opt-shift-1": "Turno 1 Oficina",
+        "desc-compressed-link": `Seleccione el turno oficialmente asignado a partir de Q1 2025. Si no está seguro a qué turno pertenece, puede acceder al siguiente enlace:
+    <a href="https://intel.sharepoint.com/sites/atmcratcommunications/CRAT%20Compressed%20Work%20Week%20Shifts%20Information/Forms/AllItems.aspx?id=%2Fsites%2Fatmcratcommunications%2FCRAT%20Compressed%20Work%20Week%20Shifts%20Information"
+    target="_blank">
+      Información de Turnos Comprimidos
+    </a>`,
+        "label-compressedShift": "Seleccione su Turno Comprimido:",
+        "opt-compressed-default": "Seleccione un turno",
+        "label-frequency": "4. ¿Cuántas veces por semana visita el site? *",
+        "option-other-frequency": "Otra (Una vez al mes, cada 2 semanas, cada 3 semanas)",
+        "label-otro-frecuencia": "Seleccione una opción:",
+        "option-sub-select": "Seleccione una opción",
+        "option4": "Seleccione una opción",
+        "option-once-month": "Una vez al mes",
+        "option-every-2-weeks": "Cada 2 semanas",
+        "option-every-3-weeks": "Cada 3 semanas",
+        "option-select": "Seleccione una opción",
+        "label-days": "5. ¿Qué días suele asistir al site? *",
+        "day-mon": "Lunes",
+        "day-tue": "Martes",
+        "day-wed": "Miércoles",
+        "day-thu": "Jueves",
+        "day-fri": "Viernes",
+        "day-sat": "Sábado",
+        "day-sun": "Domingo",
+        "label-provincia": "6. ¿En qué provincia vive? *",
+        "option-provincia-placeholder": "Seleccione una provincia",
+        "label-canton": "7. ¿En qué cantón vive? *",
+        "option-canton-placeholder": "Seleccione un cantón",
+        "label-distrito": "8. ¿En qué distrito vive? *",
+        "option-distrito-placeholder": "Seleccione un distrito",
+        "label-carpool-interest": "Estoy interesado/a en participar en un proyecto potencial de carpool",
+        "label-vehiculo": "9. ¿Tiene un vehículo propio que utiliza como medio regular de transporte? *",
+        "vehiculo-option-placeholder": "Seleccione una opción",
+        "vehiculo-option-yes": "Sí",
+        "vehiculo-option-no": "No",
+        "label-preferencia": 'Si respondió "Sí", indique su interés en participar en un esquema de carpool:',
+        "carpool-option-placeholder": "Seleccione una opción",
+        "carpool-option-offer": "Deseo ofrecer mi vehículo para compartir viajes con colegas.",
+        "carpool-option-passenger": "Deseo viajar como pasajero en el vehículo de otra persona.",
+        "carpool-option-both": "Estoy interesado en ambas opciones (ofrecer y viajar).",
+        "label-horario-info": "🕒 Indique su hora habitual de llegada y salida del sitio:",
+        "label-horario-llegada": "Hora de llegada:",
+        "arrival-5-6": "Entre las 5:00 a.m. y 6:00 a.m.",
+        "arrival-7-8": "Entre las 7:00 a.m. y 8:00 a.m.",
+        "arrival-8-9": "Entre las 8:00 a.m. y 9:00 a.m.",
+        "label-horario-salida": "Hora de salida:",
+        "departure-4-5": "Entre las 4:00 p.m. y 5:00 p.m.",
+        "departure-5-6": "Entre las 5:00 p.m. y 6:00 p.m.",
+        "departure-6-7": "Entre las 6:00 p.m. y 7:00 p.m.",
+        "survey-disclaimer": `<strong>Aviso Legal:</strong> Esta encuesta es voluntaria y cualquier dato personal que proporcione será tratado como privado y confidencial. Para conocer más sobre las prácticas de privacidad de Intel, visite <a href="https://www.intel.com/privacy" target="_blank" style="color: #0068B5;" id="privacy-link">Avisos de Privacidad Global para Empleados y Trabajadores Contingentes de Intel</a>. Al enviar esta encuesta, usted reconoce y da su consentimiento para la recopilación, uso y retención de su información según lo descrito aquí. La participación en esta encuesta no garantiza la implementación de nuevas rutas de transporte y es solo para fines de evaluación.`
+
+      }
+    };
+
+
+    // Función para cambiar idioma
+    function switchLanguage(lang) {
+      for (const id in translations[lang]) {
+        const element = document.getElementById(id);
+        if (element) {
+          if (id === 'survey-intro' || id === 'survey-disclaimer' || id === 'desc-compressed-link') {
+            element.innerHTML = translations[lang][id];
+          } else {
+            element.textContent = translations[lang][id];
+          }
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
